@@ -20,3 +20,23 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "cloudsmith"
+            version = System.getenv("CLOUDSMITH_VERSION")
+            url = "https://maven.cloudsmith.io/arcane/archive/"
+            url = "https://maven.cloudsmith.io/arcane/archive/"
+            credentials {
+                username = System.getenv("CLOUDSMITH_USERNAME")
+                password = System.getenv("CLOUDSMITH_PASSWORD")
+            }
+        }
+    }
+}
