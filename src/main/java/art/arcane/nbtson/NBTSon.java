@@ -17,7 +17,11 @@ public class NBTSon {
             .create();
 
     /**
-     * Your custom gson must register the BooleanTypeAdapterFactory
+     * Convert this object into SNBT serializing objects using gson as an intermediate step.
+     * When providing custom gson objects, make sure to register the BooleanTypeAdapterFactory.
+     * @param object the object
+     * @param gson the custom gson object
+     * @return the string representation of NBT
      */
     public static String toSNBT(Object object, Gson gson) {
         try {
@@ -27,14 +31,25 @@ public class NBTSon {
         }
     }
 
+    /**
+     * Convert this object into SNBT serializing objects using gson as an intermediate step.
+     * @param object the object
+     * @return the string representation of NBT
+     */
     public static String toSNBT(Object object) {
         return toSNBT(object, gson);
     }
 
     /**
-     * Your custom gson must register the BooleanTypeAdapterFactory
+     * Convert this string NBT back into an object using gson as an intermediate step
+     * When providing custom gson objects, make sure to register the BooleanTypeAdapterFactory.
+     * @param clazz the class type
+     * @param snbt the NBT string
+     * @param gson the custom gson
+     * @return the object
+     * @param <T> the class of the desired return object
      */
-    public static <T> T fromSNBT(Class<T> clazz, String snbt, Gson gson) {
+    public static <T> T fromSNBT(String snbt, Class<T> clazz, Gson gson) {
         try {
             return gson.fromJson(JsonNBT.toJson(new SNBTDeserializer().fromString(snbt)), clazz);
         } catch (IOException e) {
@@ -42,12 +57,23 @@ public class NBTSon {
         }
     }
 
-    public static <T> T fromSNBT(Class<T> clazz, String snbt) {
-        return fromSNBT(clazz, snbt, gson);
+    /**
+     * Convert this string NBT back into an object using gson as an intermediate step
+     * @param clazz the class type
+     * @param snbt the NBT string
+     * @return the object
+     * @param <T> the class of the desired return object
+     */
+    public static <T> T fromSNBT(String snbt, Class<T> clazz) {
+        return fromSNBT(snbt, clazz, gson);
     }
 
     /**
-     * Your custom gson must register the BooleanTypeAdapterFactory
+     * Convert this object into NBT serializing objects using gson as an intermediate step.
+     * When providing custom gson objects, make sure to register the BooleanTypeAdapterFactory.
+     * @param object the object
+     * @param gson the custom gson object
+     * @return the NBT
      */
     public static CompoundTag toNBT(Object object, Gson gson) {
         try {
@@ -57,18 +83,36 @@ public class NBTSon {
         }
     }
 
+    /**
+     * Convert this object into NBT serializing objects using gson as an intermediate step.
+     * @param object the object
+     * @return the NBT
+     */
     public static CompoundTag toNBT(Object object) {
         return toNBT(object, gson);
     }
 
     /**
-     * Your custom gson must register the BooleanTypeAdapterFactory
+     * Convert this NBT back into an object using gson as an intermediate step
+     * When providing custom gson objects, make sure to register the BooleanTypeAdapterFactory.
+     * @param clazz the class type
+     * @param tag the NBT
+     * @param gson the custom gson
+     * @return the object
+     * @param <T> the class of the desired return object
      */
-    public static <T> T fromNBT(Class<T> clazz, CompoundTag tag, Gson gson) {
+    public static <T> T fromNBT(CompoundTag tag, Class<T> clazz, Gson gson) {
         return gson.fromJson(JsonNBT.toJson(tag), clazz);
     }
 
-    public static <T> T fromNBT(Class<T> clazz, CompoundTag tag) {
-        return fromNBT(clazz, tag, gson);
+    /**
+     * Convert this NBT back into an object using gson as an intermediate step
+     * @param clazz the class type
+     * @param tag the NBT
+     * @return the object
+     * @param <T> the class of the desired return object
+     */
+    public static <T> T fromNBT(CompoundTag tag, Class<T> clazz) {
+        return fromNBT(tag, clazz, gson);
     }
 }
