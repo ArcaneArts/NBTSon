@@ -34,9 +34,9 @@ SomeObject object = NBTSon.fromNBT(SomeObject.class, tag);
 Custom Gson with Adapters
 ```java
 Gson gson = new GsonBuilder()
-        // We need to support booleans via 0 / 1 numbers because nbt
-        .registerTypeAdapterFactory(new BooleanTypeAdapterFactory())
-        .create();
+    // We need to support booleans via 0 / 1 numbers because nbt
+    .registerTypeAdapterFactory(new BooleanTypeAdapterFactory())
+    .create();
 
 NBTSon.toNBT(object, gson);
 NBTSon.toSNBT(object, gson);
