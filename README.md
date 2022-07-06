@@ -1,6 +1,6 @@
 # NBTSon
 
-Gain the advantage of a small storage footprint with the advantage of your object being the codec, with the power of Gson type adapters!
+Gain the advantage of a similar storage footprint with the advantage of your object being the codec, with the power of Gson type adapters!
 
 Essentially Objects are converted to Json first, using gson, then are converted to NBT after. This ensures types like Enums & lists are properly serialized, this also means gson type adapters work fine.
 
@@ -52,4 +52,15 @@ You can run this test by running :test in this project. This test was 10,000x ru
 Gson: 132ms
 NBT : 207ms
 SNBT: 299ms
+```
+
+## Footprint
+
+While NBT is not generally smaller when keys are large, it can be comparable to json
+
+```
+Json            : 499 Bytes
+Compressed Json : 218 Bytes
+Uncompressed NBT: 399 Bytes
+Compressed NBT  : 220 Bytes
 ```

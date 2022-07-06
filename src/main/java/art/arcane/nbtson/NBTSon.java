@@ -16,6 +16,38 @@ public class NBTSon {
             .registerTypeAdapterFactory(new BooleanTypeAdapterFactory())
             .create();
 
+    public static <T> T readNBT(InputStream stream, Class<T> clazz, Gson gson) throws IOException {
+        return fromNBT((CompoundTag) new NBTDeserializer().fromStream(stream).getTag(), clazz, gson);
+    }
+
+    public static <T> T readNBT(InputStream stream, Class<T> clazz) throws IOException {
+        return fromNBT((CompoundTag) new NBTDeserializer().fromStream(stream).getTag(), clazz);
+    }
+
+    public static <T> T readUncompressedNBT(InputStream stream, Class<T> clazz, Gson gson) throws IOException {
+        return fromNBT((CompoundTag) new NBTDeserializer(false).fromStream(stream).getTag(), clazz, gson);
+    }
+
+    public static <T> T readUncompressedNBT(InputStream stream, Class<T> clazz) throws IOException {
+        return fromNBT((CompoundTag) new NBTDeserializer(false).fromStream(stream).getTag(), clazz);
+    }
+
+    public static void writeNBT(Object object, OutputStream stream, Gson gson) throws IOException {
+        new NBTSerializer().toStream(new NamedTag("", toNBT(object, gson)), stream);
+    }
+
+    public static void writeNBT(Object object, OutputStream stream) throws IOException {
+        new NBTSerializer().toStream(new NamedTag("", toNBT(object)), stream);
+    }
+
+    public static void writeUncompressedNBT(Object object, OutputStream stream, Gson gson) throws IOException {
+        new NBTSerializer(false).toStream(new NamedTag("", toNBT(object, gson)), stream);
+    }
+
+    public static void writeUncompressedNBT(Object object, OutputStream stream) throws IOException {
+        new NBTSerializer(false).toStream(new NamedTag("", toNBT(object)), stream);
+    }
+
     /**
      * Convert this object into SNBT serializing objects using gson as an intermediate step.
      * When providing custom gson objects, make sure to register the BooleanTypeAdapterFactory.

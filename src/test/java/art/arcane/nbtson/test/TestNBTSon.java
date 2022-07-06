@@ -2,15 +2,16 @@ package art.arcane.nbtson.test;
 
 import art.arcane.nbtson.NBTSon;
 import art.arcane.nbtson.io.JsonNBT;
+import art.arcane.nbtson.tag.ByteArrayTag;
 import art.arcane.nbtson.tag.CompoundTag;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,6 +31,34 @@ public class TestNBTSon {
         String stag = NBTSon.toSNBT(object);
         String stag2 = NBTSon.toSNBT(NBTSon.fromSNBT(stag, AllTheTypes.class));
         assertEquals(stag, stag2);
+    }
+
+    @Test void streams() throws IOException {
+        ByteArrayOutputStream boas = new ByteArrayOutputStream();
+        AllTheTypes object = new AllTheTypes();
+
+        DataOutputStream dos = new DataOutputStream(boas);
+        dos.writeUTF(new Gson().toJson(object));
+        System.out.println("Json            : " + boas.toByteArray().length + " Bytes");
+
+        boas = new ByteArrayOutputStream();
+        GZIPOutputStream gzo = new GZIPOutputStream(boas);
+        dos = new DataOutputStream(gzo);
+
+        dos.writeUTF(new Gson().toJson(object));
+        dos.flush();
+        gzo.flush();
+        dos.close();
+        System.out.println("Compressed Json : " + boas.toByteArray().length + " Bytes");
+
+        boas = new ByteArrayOutputStream();
+        NBTSon.writeUncompressedNBT(object, boas);
+        System.out.println("Uncompressed NBT: " + boas.toByteArray().length + " Bytes");
+
+        boas = new ByteArrayOutputStream();
+        NBTSon.writeNBT(object, boas);
+        System.out.println("Compressed NBT  : " + boas.toByteArray().length + " Bytes");
+        System.out.println(new Gson().toJson(object));
     }
 
     @Test void performance()
@@ -98,5 +127,6 @@ public class TestNBTSon {
     public static class ASubObject
     {
         private String someContent = "some content";
+        private List<Integer> ints = List.of(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
     }
 }
