@@ -1,24 +1,34 @@
 package art.arcane.nbtson.test;
 
 import art.arcane.nbtson.NBTSon;
+import art.arcane.nbtson.io.JsonNBT;
 import art.arcane.nbtson.tag.CompoundTag;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestNBTSon {
     @Test
-    public void testNBT()
-    {
+    public void testNBT() throws IOException {
         AllTheTypes object = new AllTheTypes();
         CompoundTag tag = NBTSon.toNBT(object);
         CompoundTag tag2 = NBTSon.toNBT(NBTSon.fromNBT(AllTheTypes.class, tag));
+        assertEquals(tag, tag2);
+    }
+
+    @Test void testSNBT()
+    {
+        AllTheTypes object = new AllTheTypes();
+        CompoundTag tag = NBTSon.toNBT(object);
         String stag = NBTSon.toSNBT(object);
         String stag2 = NBTSon.toSNBT(NBTSon.fromSNBT(AllTheTypes.class, stag));
         assertEquals(stag, stag2);
-        assertEquals(tag, tag2);
     }
 
     public static class AllTheTypes
@@ -32,10 +42,12 @@ public class TestNBTSon {
         private boolean aboolean = false;
         private String astring = "this is a string";
         private ASubObject sub = new ASubObject();
+        private List<String> someList = List.of("a", "bb", "ccc");
+        private List<ASubObject> subObjects = List.of(new ASubObject(), new ASubObject(), new ASubObject());
     }
 
     public static class ASubObject
     {
-        private String someContent;
+        private String someContent = "some content";
     }
 }

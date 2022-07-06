@@ -2,57 +2,73 @@ package art.arcane.nbtson;
 
 import art.arcane.nbtson.io.*;
 import art.arcane.nbtson.tag.CompoundTag;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.*;
 
 public class NBTSon {
-    public static <T> T fromSNBT(Class<T> clazz, String in) {
-        StringReader reader = new StringReader(in);
-        T t = fromSNBT(clazz, reader);
-        reader.close();
-        return t;
-    }
+    private static final Gson gson = new GsonBuilder()
+            .setLenient()
+            .registerTypeAdapterFactory(new BooleanTypeAdapterFactory())
+            .create();
 
-    public static <T> T fromSNBT(Class<T> clazz, Reader in) {
+    /**
+     * Your custom gson must register the BooleanTypeAdapterFactory
+     */
+    public static String toSNBT(Object object, Gson gson) {
         try {
-            return fromNBT(clazz, ((CompoundTag) new SNBTDeserializer().fromReader(in)));
+            return new SNBTSerializer().toString(JsonNBT.fromJsonObject(new JsonReader(new StringReader(gson.toJson(object)))));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String toSNBT(Object object){
-        StringWriter sw = new StringWriter();
-        toSNBT(object, sw);
+    public static String toSNBT(Object object) {
+        return toSNBT(object, gson);
+    }
+
+    /**
+     * Your custom gson must register the BooleanTypeAdapterFactory
+     */
+    public static <T> T fromSNBT(Class<T> clazz, String snbt, Gson gson) {
         try {
-            sw.close();
+            return gson.fromJson(JsonNBT.toJson(new SNBTDeserializer().fromString(snbt)), clazz);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return sw.toString();
     }
 
-    public static void toSNBT(Object object, Writer writer) {
+    public static <T> T fromSNBT(Class<T> clazz, String snbt) {
+        return fromSNBT(clazz, snbt, gson);
+    }
+
+    /**
+     * Your custom gson must register the BooleanTypeAdapterFactory
+     */
+    public static CompoundTag toNBT(Object object, Gson gson) {
         try {
-            SNBTWriter.write(toNBT(object), writer);
+            return JsonNBT.fromJsonObject(new JsonReader(new StringReader(gson.toJson(object))));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static CompoundTag toNBT(Object object) {
-        try {
-            return NBTObjectSerializer.serialize(object);
-        } catch (IllegalAccessException | UnserializableClassException e) {
-            throw new RuntimeException(e);
-        }
+        return toNBT(object, gson);
+    }
+
+    /**
+     * Your custom gson must register the BooleanTypeAdapterFactory
+     */
+    public static <T> T fromNBT(Class<T> clazz, CompoundTag tag, Gson gson) {
+        return gson.fromJson(JsonNBT.toJson(tag), clazz);
     }
 
     public static <T> T fromNBT(Class<T> clazz, CompoundTag tag) {
-        try {
-            return NBTObjectSerializer.deserialize(clazz, tag);
-        } catch (IllegalAccessException | InstantiationException | UnserializableClassException e) {
-            throw new RuntimeException(e);
-        }
+        return fromNBT(clazz, tag, gson);
     }
 }
